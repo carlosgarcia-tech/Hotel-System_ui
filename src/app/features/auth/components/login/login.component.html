@@ -1,0 +1,111 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <i class="fas fa-hotel"></i>
+        <h2>HotelManager</h2>
+      </div>
+      <h1 class="auth-title">Iniciar Sesión</h1>
+      <p class="auth-subtitle">Accede a tu cuenta para gestionar hoteles</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="error-message" *ngIf="errorMessage()">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ errorMessage() }}
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">
+          <i class="fas fa-envelope"></i>
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-input"
+          [class.error]="hasFieldError('email')"
+          placeholder="tu@email.com"
+          autocomplete="email"
+        />
+        <div class="field-error" *ngIf="hasFieldError('email')">
+          {{ getFieldError('email') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">
+          <i class="fas fa-lock"></i>
+          Contraseña
+        </label>
+        <div class="password-input-container">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            [class.error]="hasFieldError('password')"
+            placeholder="Tu contraseña"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [title]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          >
+            <i [class]="showPassword() ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          </button>
+        </div>
+        <div class="field-error" *ngIf="hasFieldError('password')">
+          {{ getFieldError('password') }}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="rememberMe" class="checkbox">
+          <span class="checkmark"></span>
+          Recordarme
+        </label>
+        <a routerLink="/auth/forgot-password" class="forgot-link">
+          ¿Olvidaste tu contraseña?
+        </a>
+      </div>
+
+      <button
+        type="submit"
+        class="auth-button"
+        [class.loading]="isLoading()"
+        [disabled]="isLoading()"
+      >
+        <span *ngIf="!isLoading()">
+          <i class="fas fa-sign-in-alt"></i>
+          Iniciar Sesión
+        </span>
+        <span *ngIf="isLoading()" class="loading-content">
+          <i class="fas fa-spinner fa-spin"></i>
+          Iniciando sesión...
+        </span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>
+        ¿No tienes cuenta? 
+        <a routerLink="/auth/register" class="register-link">Regístrate aquí</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="demo-credentials">
+    <h3>Credenciales de Prueba</h3>
+    <div class="demo-user" (click)="loginForm.patchValue({email: 'admin@hotelmanager.com', password: 'admin123'})">
+      <strong>Admin:</strong> admin@hotelmanager.com / admin123
+    </div>
+    <div class="demo-user" (click)="loginForm.patchValue({email: 'manager@hotelmanager.com', password: 'manager123'})">
+      <strong>Manager:</strong> manager@hotelmanager.com / manager123
+    </div>
+  </div>
+</div>

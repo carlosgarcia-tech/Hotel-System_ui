@@ -1,0 +1,184 @@
+<div class="hotels-dashboard">
+  <div class="dashboard-header">
+    <h1>Hotels Menu</h1>
+  </div>
+  <div class="filters-section">
+    <div class="search-bar">
+      <div class="search-input">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search hotels by name, description, or city..."
+        />
+      </div>
+      <button class="btn btn-primary" (click)="onSearch()">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </div>
+
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Rating</label>
+        <select 
+          [value]="selectedMinRating ?? ''" 
+          (change)="onMinRatingChange($any($event.target).value)"
+        >
+          <option value="">Any Rating</option>
+          <option value="4">4+ Stars</option>
+          <option value="3">3+ Stars</option>
+          <option value="2">2+ Stars</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>City</label>
+        <select 
+          [value]="selectedCity" 
+          (change)="onCityChange($any($event.target).value)"
+        >
+          <option value="">All Cities</option>
+          <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Price Range</label>
+        <select 
+          [value]="getPriceRangeValue(selectedPriceRange)" 
+          (change)="onPriceRangeChange($any($event.target).value)"
+        >
+          <option value="">Any Price</option>
+          <option *ngFor="let range of priceRanges" [value]="range.min + '-' + range.max">
+            {{ range.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Amenities</label>
+        <select 
+          multiple 
+          (change)="onAmenitiesChange($event)"
+        >
+          <option *ngFor="let amenity of amenities" [value]="amenity" 
+                  [selected]="selectedAmenities.includes(amenity)">
+            {{ amenity }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Sort By</label>
+        <select 
+          [(ngModel)]="selectedSort" 
+          (change)="onSortChange()"
+        >
+          <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <button class="btn btn-secondary" (click)="clearFilters()">
+          <i class="fas fa-times"></i> Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p>Loading hotels...</p>
+  </div>
+
+  <div *ngIf="error && !isLoading" class="error-state">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadHotels()">
+      <i class="fas fa-refresh"></i> Try Again
+    </button>
+  </div>
+
+  <div *ngIf="!isLoading && !error" class="content-state">
+    <div class="results-summary">
+      <p>Showing {{ filteredHotels.length }} of {{ hotels.length }} hotels</p>
+    </div>
+
+    <div class="hotels-grid" *ngIf="filteredHotels.length > 0">
+      <app-card
+        *ngFor="let hotel of paginatedHotels"
+        [title]="hotel.name"
+        [subtitle]="hotel.address.city + ', ' + hotel.address.country"
+        [description]="hotel.description"
+        [imageUrl]="hotel.images[0] || 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400'"
+        [imageAlt]="hotel.name"
+        [price]="hotel.priceRange.min"
+        [currency]="hotel.priceRange.currency"
+        [rating]="hotel.rating.averageRating"
+        [badges]="getCardBadges(hotel)"
+        [actions]="getCardActions(hotel)"
+        variant="hotel"
+        (actionClick)="onCardAction($event, hotel.id)"
+        class="hotel-card"
+      >
+        <div slot="hotel-amenities">
+          <div class="hotel-details">
+            <div class="detail-item">
+              <i class="fas fa-star"></i>
+              <span>{{ hotel.rating.averageRating | number:'1.1-1' }} ({{ hotel.rating.reviewCount }} reviews)</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-bed"></i>
+              <span>{{ hotel.availableRooms }} of {{ hotel.totalRooms }} rooms available</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>{{ hotel.address.street }}</span>
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div *ngIf="filteredHotels.length === 0" class="no-results">
+      <i class="fas fa-search"></i>
+      <h3>No hotels found</h3>
+      <p>Try adjusting your search criteria or clear all filters</p>
+      <button class="btn btn-primary" (click)="clearFilters()">
+        Clear All Filters
+      </button>
+    </div>
+
+    <div *ngIf="filteredHotels.length > 0" class="pagination">
+      <button 
+        class="btn btn-outline" 
+        [disabled]="currentPage === 1"
+        (click)="prevPage()"
+      >
+        <i class="fas fa-chevron-left"></i> Previous
+      </button>
+
+      <div class="page-numbers">
+        <span 
+          *ngFor="let page of getPagesArray(); let i = index"
+          class="page-number"
+          [class.active]="currentPage === i + 1"
+          (click)="goToPage(i + 1)"
+        >
+          {{ i + 1 }}
+        </span>
+      </div>
+
+      <button 
+        class="btn btn-outline" 
+        [disabled]="currentPage === totalPages"
+        (click)="nextPage()"
+      >
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

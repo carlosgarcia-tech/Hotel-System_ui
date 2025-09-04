@@ -1,0 +1,232 @@
+<div class="create-reservation-container">
+  <div class="header">
+    <button class="btn btn-outline" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i> Volver a Habitaciones
+    </button>
+    <h1>Crear Reserva</h1>
+    <p>Completa la información para realizar tu reserva</p>
+    
+    <div class="debug-info" *ngIf="hotelId && roomId">
+      <p>Hotel ID: {{ hotelId }}</p>
+      <p>Room ID: {{ roomId }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Cargando datos de reserva...</p>
+  </div>
+
+  <div *ngIf="error && !isLoading" class="error-state">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadData()">
+      <i class="fas fa-refresh"></i> Intentar de nuevo
+    </button>
+  </div>
+
+  <div *ngIf="!isLoading && !error && hotel && room" class="reservation-content">
+    
+    <div class="reservation-summary">
+      <h3>Resumen de tu reserva</h3>
+
+      <div class="summary-item">
+        <span class="label">Hotel:</span>
+        <span class="value">{{ hotel.name }}</span>
+      </div>
+
+      <div class="summary-item">
+        <span class="label">Habitación:</span>
+        <span class="value">#{{ room.number }} - {{ getRoomTypeDisplay(room.type) }}</span>
+      </div>
+
+      <div class="summary-item">
+        <span class="label">Precio por noche:</span>
+        <span class="value">{{ room.pricing.currency }} {{ room.pricing.basePrice | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="summary-item">
+        <span class="label">Capacidad máxima:</span>
+        <span class="value">{{ room.capacity.total }} personas ({{ room.capacity.adults }} adultos + {{ room.capacity.children }} niños)</span>
+      </div>
+
+      <div class="summary-item" *ngIf="reservationForm.get('checkInDate')?.value && reservationForm.get('checkOutDate')?.value">
+        <span class="label">Noches:</span>
+        <span class="value">{{ calculateNights() }}</span>
+      </div>
+      
+      <div class="summary-item total" *ngIf="calculateNights() > 0">
+        <span class="label">Total estimado:</span>
+        <span class="value">{{ room.pricing.currency }} {{ calculateTotal() | number:'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="successMessage" class="success-state">
+      <i class="fas fa-check-circle"></i>
+      <p>{{ successMessage }}</p>
+      <p>Redirigiendo a tus reservas...</p>
+    </div>
+
+    <form *ngIf="!successMessage" [formGroup]="reservationForm" (ngSubmit)="onSubmit()" class="reservation-form">
+      
+      <div class="form-section">
+        <h3>Fechas de Estadía</h3>
+
+        <div class="date-fields">
+          <div class="form-group">
+            <label for="checkInDate">Fecha de Check-in *</label>
+            <input
+              type="date"
+              id="checkInDate"
+              formControlName="checkInDate"
+              [min]="getTodayDate()"
+              [class.error]="reservationForm.get('checkInDate')?.invalid && reservationForm.get('checkInDate')?.touched"
+            />
+            <div *ngIf="reservationForm.get('checkInDate')?.invalid && reservationForm.get('checkInDate')?.touched" class="error">
+              Fecha de check-in requerida
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="checkOutDate">Fecha de Check-out *</label>
+            <input
+              type="date"
+              id="checkOutDate"
+              formControlName="checkOutDate"
+              [min]="getMinCheckoutDate()"
+              [class.error]="reservationForm.get('checkOutDate')?.invalid && reservationForm.get('checkOutDate')?.touched"
+            />
+            <div *ngIf="reservationForm.get('checkOutDate')?.invalid && reservationForm.get('checkOutDate')?.touched" class="error">
+              Fecha de check-out requerida y debe ser posterior al check-in
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Información de Huéspedes</h3>
+
+        <div class="form-group">
+          <label for="numberOfGuests">Número de Huéspedes *</label>
+          <input
+            type="number"
+            id="numberOfGuests"
+            formControlName="numberOfGuests"
+            min="1"
+            [max]="room.capacity.total"
+            [class.error]="reservationForm.get('numberOfGuests')?.invalid && reservationForm.get('numberOfGuests')?.touched"
+          />
+          <div *ngIf="reservationForm.get('numberOfGuests')?.invalid && reservationForm.get('numberOfGuests')?.touched" class="error">
+            Número de huéspedes requerido (máximo: {{ room.capacity.total }})
+          </div>
+          <small>Capacidad máxima: {{ room.capacity.total }} personas ({{ room.capacity.adults }} adultos + {{ room.capacity.children }} niños)</small>
+        </div>
+
+        <div class="form-group">
+          <label for="guestAge">Edad del Huésped Principal *</label>
+          <input
+            type="number"
+            id="guestAge"
+            formControlName="guestAge"
+            min="18"
+            max="100"
+            [class.error]="reservationForm.get('guestAge')?.invalid && reservationForm.get('guestAge')?.touched"
+          />
+          <div *ngIf="reservationForm.get('guestAge')?.invalid && reservationForm.get('guestAge')?.touched" class="error">
+            Edad requerida (mínimo 18 años)
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Documentación</h3>
+
+        <div class="form-group">
+          <label for="guestDocumentType">Tipo de Documento *</label>
+          <select
+            id="guestDocumentType"
+            formControlName="guestDocumentType"
+            [class.error]="reservationForm.get('guestDocumentType')?.invalid && reservationForm.get('guestDocumentType')?.touched"
+          >
+            <option value="">Seleccionar tipo de documento</option>
+            <option *ngFor="let docType of documentTypes" [value]="docType.value">
+              {{ docType.label }}
+            </option>
+          </select>
+          <div *ngIf="reservationForm.get('guestDocumentType')?.invalid && reservationForm.get('guestDocumentType')?.touched" class="error">
+            Tipo de documento requerido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="guestDocumentNumber">Número de Documento *</label>
+          <input
+            type="text"
+            id="guestDocumentNumber"
+            formControlName="guestDocumentNumber"
+            placeholder="Ej: AB123456"
+            [class.error]="reservationForm.get('guestDocumentNumber')?.invalid && reservationForm.get('guestDocumentNumber')?.touched"
+          />
+          <div *ngIf="reservationForm.get('guestDocumentNumber')?.invalid && reservationForm.get('guestDocumentNumber')?.touched" class="error">
+            Número de documento requerido
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Solicitudes Especiales</h3>
+
+        <div class="form-group">
+          <label for="specialRequests">Solicitudes o Comentarios Adicionales</label>
+          <textarea
+            id="specialRequests"
+            formControlName="specialRequests"
+            rows="4"
+            placeholder="Ej: Check-in temprano, cama adicional, alergias alimentarias, etc."
+          ></textarea>
+          <small>Opcional. Máximo 500 caracteres.</small>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-group terms">
+          <label class="checkbox-label">
+            <input type="checkbox" required />
+            <span class="checkmark"></span>
+            Acepto los <a href="/terms" target="_blank">términos y condiciones</a> y las
+            <a href="/privacy" target="_blank">políticas de privacidad</a> *
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="goBack()" [disabled]="isLoading">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="reservationForm.invalid || isLoading"
+          [class.loading]="isLoading"
+        >
+          <span *ngIf="!isLoading">
+            <i class="fas fa-calendar-check"></i>
+            Confirmar Reserva
+          </span>
+          <span *ngIf="isLoading" class="loading-content">
+            <i class="fas fa-spinner fa-spin"></i>
+            Procesando...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="!isLoading && !error && (!hotel || !room)" class="no-data">
+    <i class="fas fa-exclamation-circle"></i>
+    <p>No se pudieron cargar los datos de la reserva</p>
+    <button class="btn btn-primary" (click)="loadData()">
+      <i class="fas fa-refresh"></i> Reintentar
+    </button>
+  </div>
+</div>

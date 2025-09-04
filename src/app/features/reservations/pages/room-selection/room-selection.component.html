@@ -1,0 +1,77 @@
+<div class="room-selection-container">
+  <div class="header">
+    <button class="btn btn-outline" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i> Volver a Hoteles
+    </button>
+    <h1>Habitaciones Disponibles</h1>
+    <p>Selecciona una habitación para reservar</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Cargando habitaciones...</p>
+  </div>
+
+  <div *ngIf="error && !isLoading" class="error-state">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadRooms()">
+      <i class="fas fa-refresh"></i> Intentar de nuevo
+    </button>
+  </div>
+
+  <div *ngIf="!isLoading && !error" class="rooms-grid">
+    <app-card
+      *ngFor="let room of rooms"
+      [title]="'Habitación ' + room.number"
+      [subtitle]="getRoomTypeDisplay(room.type)"
+      [description]="room.description || 'Habitación cómoda y bien equipada'"
+      [imageUrl]="
+        room.images[0] || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400'
+      "
+      [imageAlt]="'Habitación ' + room.number"
+      [price]="room.pricing.basePrice"
+      [currency]="room.pricing.currency"
+      [badges]="getRoomBadges(room)"
+      [actions]="getCardActions(room)"
+      variant="room"
+      (actionClick)="onCardAction($event, room.id)"
+      class="room-card"
+    >
+      <div slot="room-features">
+        <div class="room-details">
+          <div class="detail-item">
+            <i class="fas fa-users"></i>
+            <span>Capacidad: {{ room.capacity.total }} personas</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-bed"></i>
+            <span>Camas: {{ getBedSummary(room.bedConfiguration) }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-expand"></i>
+            <span>Tamaño: {{ room.size.area }} {{ room.size.unit }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-layer-group"></i>
+            <span>Piso: {{ room.floor }}</span>
+          </div>
+          <div
+            class="detail-item"
+            [class.available]="room.availability.isAvailable"
+            [class.unavailable]="!room.availability.isAvailable"
+          >
+            <i class="fas fa-circle"></i>
+            <span>{{ room.availability.isAvailable ? 'Disponible' : 'No disponible' }}</span>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <div *ngIf="!isLoading && !error && rooms.length === 0" class="no-rooms">
+    <i class="fas fa-bed"></i>
+    <h3>No hay habitaciones disponibles</h3>
+    <p>No se encontraron habitaciones para este hotel.</p>
+  </div>
+</div>

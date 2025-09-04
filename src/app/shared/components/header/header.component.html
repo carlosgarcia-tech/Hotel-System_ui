@@ -1,0 +1,129 @@
+<header class="header">
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo" [routerLink]="['/']">
+        <i class="fas fa-hotel"></i>
+        <span>HotelManager</span>
+      </div>
+
+      <div *ngIf="isLoading" class="nav-loading">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div>
+
+      <ng-container *ngIf="!isLoading && authChecked">
+
+        <div class="nav-menu" [class.active]="isMenuOpen">
+          <a class="nav-link" [routerLink]="['/hotels']" routerLinkActive="active">
+            <i class="fas fa-building"></i>
+            Hoteles
+          </a>
+          
+          <a class="nav-link" [routerLink]="['/rooms']" routerLinkActive="active" 
+             *ngIf="isAuthenticated && (hasRole(UserRole.ADMIN) || hasRole(UserRole.MANAGER))">
+            <i class="fas fa-bed"></i>
+            Habitaciones
+          </a>
+          
+          <a class="nav-link" [routerLink]="['/reservations/my-reservations']" routerLinkActive="active"
+             *ngIf="isAuthenticated">
+            <i class="fas fa-calendar-check"></i>
+            Reservas
+          </a>
+          
+          <a class="nav-link" [routerLink]="['/promotions']" routerLinkActive="active">
+            <i class="fas fa-tags"></i>
+            Promociones
+          </a>
+
+          <a class="nav-link" [routerLink]="['/users']" routerLinkActive="active"
+             *ngIf="isAuthenticated && hasRole(UserRole.ADMIN)">
+            <i class="fas fa-users"></i>
+            Usuarios
+          </a>
+        </div>
+
+        <div class="nav-actions">
+          <ng-container *ngIf="isAuthenticated; else authButtons">
+            <button class="btn btn-primary" (click)="navigateToProfile()">
+              <i class="fas fa-user"></i>
+              Profile
+            </button>
+            <button class="btn btn-outline logout-btn" (click)="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </button>
+          </ng-container>
+
+          <ng-template #authButtons>
+            <button class="btn btn-outline" [routerLink]="['/auth/login']">
+              Login
+            </button>
+            <button class="btn btn-primary" [routerLink]="['/auth/register']">
+              Register
+            </button>
+          </ng-template>
+        </div>
+      </ng-container>
+
+      <div class="mobile-menu-toggle" (click)="toggleMenu()">
+        <i class="fas fa-bars" *ngIf="!isMenuOpen"></i>
+        <i class="fas fa-times" *ngIf="isMenuOpen"></i>
+      </div>
+    </div>
+
+    <div class="mobile-nav" [class.active]="isMenuOpen">
+      <a class="mobile-nav-link" [routerLink]="['/hotels']" (click)="toggleMenu()">
+        <i class="fas fa-building"></i>
+        Hoteles
+      </a>
+      
+      <a class="mobile-nav-link" [routerLink]="['/rooms']" (click)="toggleMenu()"
+         *ngIf="isAuthenticated && (hasRole(UserRole.ADMIN) || hasRole(UserRole.MANAGER))">
+        <i class="fas fa-bed"></i>
+        Habitaciones
+      </a>
+      
+      <a class="mobile-nav-link" [routerLink]="['/reservations']" (click)="toggleMenu()"
+         *ngIf="isAuthenticated">
+        <i class="fas fa-calendar-check"></i>
+        Reservas
+      </a>
+      
+      <a class="mobile-nav-link" [routerLink]="['/promotions']" (click)="toggleMenu()">
+        <i class="fas fa-tags"></i>
+        Promociones
+      </a>
+
+      <a class="mobile-nav-link" [routerLink]="['/users']" (click)="toggleMenu()"
+         *ngIf="isAuthenticated && hasRole(UserRole.ADMIN)">
+        <i class="fas fa-users"></i>
+        Usuarios
+      </a>
+
+      <div class="mobile-nav-divider" *ngIf="isAuthenticated"></div>
+      
+      <ng-container *ngIf="isAuthenticated; else mobileAuthButtons">
+        <a class="mobile-nav-link" [routerLink]="['/profile']" (click)="toggleMenu()">
+          <i class="fas fa-user"></i>
+          Profile
+        </a>
+        
+        <button class="mobile-nav-link logout-btn" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </button>
+      </ng-container>
+
+      <ng-template #mobileAuthButtons>
+        <button class="mobile-nav-link" [routerLink]="['/auth/login']" (click)="toggleMenu()">
+          <i class="fas fa-sign-in-alt"></i>
+          Login
+        </button>
+        <button class="mobile-nav-link" [routerLink]="['/auth/register']" (click)="toggleMenu()">
+          <i class="fas fa-user-plus"></i>
+          Register
+        </button>
+      </ng-template>
+    </div>
+  </nav>
+</header>
