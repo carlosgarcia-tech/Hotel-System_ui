@@ -1,0 +1,63 @@
+<div class="home-container">
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">{{ title }}</h1>
+      <p class="hero-subtitle">Tu plataforma integral para la gestión hotelera</p>
+      <p class="hero-description">
+        Simplificamos la administración de hoteles, habitaciones y reservas con una interfaz moderna y funcional.
+      </p>
+    </div>
+  </section>
+
+  <section class="hotels-section">
+    <div class="container">
+      <h2 class="section-title">Hoteles Destacados</h2>
+      <div class="hotels-grid">
+        <app-card
+          *ngFor="let hotel of sampleHotels; trackBy: trackByHotelId"
+          [title]="hotel.title"
+          [subtitle]="hotel.subtitle"
+          [description]="hotel.description"
+          [imageUrl]="hotel.imageUrl"
+          [imageAlt]="hotel.imageAlt"
+          [price]="hotel.price"
+          [currency]="hotel.currency"
+          [rating]="hotel.rating"
+          [badges]="hotel.badges"
+          [actions]="hotel.actions"
+          [variant]="'hotel'"
+          (cardClick)="onCardClick(hotel.id)"
+          (actionClick)="onActionClick($event, hotel.id)">
+        </app-card>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section">
+    <div class="container">
+      <h2 class="section-title">¿Por qué elegir HotelManager?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <i class="fas fa-hotel feature-icon"></i>
+          <h3>Gestión Integral</h3>
+          <p>Administra hoteles, habitaciones y reservas desde una sola plataforma.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-users feature-icon"></i>
+          <h3>Control de Usuarios</h3>
+          <p>Sistema de roles y permisos para diferentes tipos de usuarios.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-chart-line feature-icon"></i>
+          <h3>Reportes Avanzados</h3>
+          <p>Análisis detallado de ocupación, ingresos y rendimiento.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-mobile-alt feature-icon"></i>
+          <h3>Diseño Responsivo</h3>
+          <p>Accede desde cualquier dispositivo con nuestra interfaz adaptable.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
