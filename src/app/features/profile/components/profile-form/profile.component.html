@@ -1,0 +1,106 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>User Profile</h1>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p>Loading profile...</p>
+  </div>
+
+  <div *ngIf="error && !isLoading" class="error-state">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadUserProfile()">
+      <i class="fas fa-refresh"></i> Try Again
+    </button>
+  </div>
+
+  <div *ngIf="user && !isLoading" class="profile-content">
+    <div *ngIf="successMessage" class="success-message">
+      <i class="fas fa-check-circle"></i>
+      <p>{{ successMessage }}</p>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-actions">
+        <button *ngIf="!editMode" class="btn btn-primary" (click)="toggleEditMode()">
+          <i class="fas fa-edit"></i> Edit Profile
+        </button>
+        <div *ngIf="editMode" class="edit-actions">
+          <button class="btn btn-success" (click)="saveProfile()" [disabled]="isLoading">
+            <i class="fas fa-save"></i> Save Changes
+          </button>
+          <button class="btn btn-secondary" (click)="cancelEdit()" [disabled]="isLoading">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-info">
+        <div class="info-group">
+          <label>First Name</label>
+          <div *ngIf="!editMode" class="info-value">{{ user.firstName }}</div>
+          <input *ngIf="editMode" type="text" [(ngModel)]="editedUser.firstName" class="form-input">
+        </div>
+
+        <div class="info-group">
+          <label>Last Name</label>
+          <div *ngIf="!editMode" class="info-value">{{ user.lastName }}</div>
+          <input *ngIf="editMode" type="text" [(ngModel)]="editedUser.lastName" class="form-input">
+        </div>
+
+        <div class="info-group" *ngIf="!editMode">
+          <label>Full Name</label>
+          <div class="info-value">{{ user.firstName }} {{ user.lastName }}</div>
+        </div>
+
+        <div class="info-group">
+          <label>Email</label>
+          <div class="info-value">{{ user.email }}</div>
+          <small class="text-muted">Email cannot be changed</small>
+        </div>
+
+        <div class="info-group">
+          <label>Role</label>
+          <div class="info-value role-badge" [class]="user.role.toLowerCase()">
+            {{ user.role }}
+          </div>
+        </div>
+
+        <div class="info-group">
+          <label>Phone</label>
+          <div *ngIf="!editMode" class="info-value">{{ user.phone || 'Not provided' }}</div>
+          <input *ngIf="editMode" type="tel" [(ngModel)]="editedUser.phone" class="form-input" placeholder="Enter phone number">
+        </div>
+
+        <div class="info-group">
+          <label>Address</label>
+          <div *ngIf="!editMode" class="info-value">{{ user.address || 'Not provided' }}</div>
+          <textarea *ngIf="editMode" [(ngModel)]="editedUser.address" class="form-input" placeholder="Enter address" rows="3"></textarea>
+        </div>
+
+        <div class="info-group">
+          <label>Status</label>
+          <div class="info-value">
+            <span class="status-badge" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+              {{ user.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="info-group" *ngIf="user.createdAt">
+          <label>Member Since</label>
+          <div class="info-value">{{ user.createdAt | date:'mediumDate' }}</div>
+        </div>
+
+        <div class="info-group" *ngIf="user.updatedAt">
+          <label>Last Updated</label>
+          <div class="info-value">{{ user.updatedAt | date:'mediumDate' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
