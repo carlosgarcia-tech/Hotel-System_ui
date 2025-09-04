@@ -189,7 +189,6 @@ export class MyReservationsComponent implements OnInit {
       return false;
     }
 
-    // Check if check-in date is in the future (allow cancellation up to check-in day)
     try {
       const checkInDate = new Date(reservation.checkInDate);
       const today = new Date();
@@ -205,7 +204,6 @@ export class MyReservationsComponent implements OnInit {
       return false;
     }
 
-    // Allow modification if check-in is more than 24 hours away
     try {
       const checkInDate = new Date(reservation.checkInDate);
       const tomorrow = new Date();
@@ -217,15 +215,11 @@ export class MyReservationsComponent implements OnInit {
   }
 
   viewReservationDetails(reservationId: string) {
-    // Navigate to reservation details page or show detailed modal
     alert(`Ver detalles de la reserva: ${reservationId}`);
-    // this.router.navigate(['/reservations', reservationId]);
   }
 
   modifyReservation(reservationId: string) {
-    // Navigate to modification page
     alert(`Modificar reserva: ${reservationId}`);
-    // this.router.navigate(['/reservations', reservationId, 'modify']);
   }
 
   confirmCancelReservation(reservation: Reservation) {

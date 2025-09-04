@@ -27,9 +27,7 @@ export class RoomSelectionComponent implements OnInit {
   error: string | null = null;
 
   ngOnInit() {
-    console.log('RoomSelectionComponent initialized');
     this.hotelId = this.route.snapshot.paramMap.get('hotelId') || '';
-    console.log('Hotel ID from route:', this.hotelId);
 
     if (!this.hotelId) {
       console.error('No hotel ID found in route parameters');
@@ -43,27 +41,21 @@ export class RoomSelectionComponent implements OnInit {
       this.loadRooms();
     } else {
       this.isLoading = true;
-      console.log('Running on server, deferring data loading to client');
     }
   }
 
   loadRooms() {
-    console.log('Loading rooms for hotel:', this.hotelId);
     this.isLoading = true;
     this.error = null;
     this.cdr.detectChanges();
 
     this.roomsService.getRoomsByHotelId(this.hotelId).subscribe({
       next: (response) => {
-        console.log('API Response received:', response);
 
         if (response.success) {
           this.rooms = response.data || [];
-          console.log('Rooms loaded successfully:', this.rooms.length, 'rooms found');
-          console.log('Rooms data:', this.rooms);
         } else {
           this.error = response.message || 'Error al cargar las habitaciones';
-          console.error('API returned error:', response.message);
         }
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -79,7 +71,6 @@ export class RoomSelectionComponent implements OnInit {
         this.cdr.detectChanges();
       },
       complete: () => {
-        console.log('API call completed');
         this.cdr.detectChanges();
       },
     });
@@ -99,7 +90,6 @@ export class RoomSelectionComponent implements OnInit {
 
   getRoomBadges(room: Room): any[] {
     const badges: any[] = [];
-    console.log('Getting badges for room:', room.id, 'type:', room.type);
 
     if (room.type === 'suite' || room.type === 'deluxe' || room.type === 'presidential') {
       badges.push({ text: 'Premium', variant: 'primary' });
@@ -119,13 +109,11 @@ export class RoomSelectionComponent implements OnInit {
       badges.push({ text: 'Accesible', variant: 'warning' });
     }
 
-    console.log('Badges for room', room.id, ':', badges);
     return badges;
   }
 
   getCardActions(room: Room): CardAction[] {
     const isAuthenticated = this.authService.isAuthenticated();
-    console.log('User authenticated:', isAuthenticated, 'for room:', room.id);
 
     const actions = [
       {
@@ -143,12 +131,10 @@ export class RoomSelectionComponent implements OnInit {
       },
     ];
 
-    console.log('Card actions for room', room.id, ':', actions);
     return actions;
   }
 
   onCardAction(action: string, roomId: string) {
-    console.log('Card action triggered:', action, 'for room:', roomId);
     switch (action) {
       case 'view-details':
         this.viewRoomDetails(roomId);
@@ -198,7 +184,6 @@ Disponible: ${room.availability.isAvailable ? 'Sí' : 'No'}`);
   }
 
   bookRoom(roomId: string) {
-    console.log('Booking room:', roomId, 'in hotel:', this.hotelId);
     this.router.navigate(['/reservations/create', this.hotelId, roomId]);
   }
 

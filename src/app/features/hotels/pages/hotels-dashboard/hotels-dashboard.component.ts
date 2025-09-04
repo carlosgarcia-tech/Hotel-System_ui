@@ -331,7 +331,6 @@ export class HotelsDashboardComponent implements OnInit, OnDestroy {
   onCardAction(action: string, hotelId: string) {
     switch (action) {
       case 'view-details':
-        console.log('View details for hotel:', hotelId);
         break;
       case 'book-now':
         this.bookHotel(hotelId);
