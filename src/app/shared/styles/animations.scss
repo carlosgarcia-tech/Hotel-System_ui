@@ -1,0 +1,123 @@
+// HotelManager — Shared Animations
+// Custom easing, not browser defaults
+
+$ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+$ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+$ease-in:     cubic-bezier(0.55, 0, 1, 0.45);
+
+// Durations
+$duration-micro:    120ms;
+$duration-small:    180ms;
+$duration-normal:   240ms;
+$duration-entrance: 300ms;
+
+// --- Keyframes ---
+
+@keyframes hm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes hm-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hm-fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hm-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hm-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes hm-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes hm-shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-3px); }
+  75%      { transform: translateX(3px); }
+}
+
+// --- Utility classes ---
+
+.hm-animate-fade-in {
+  animation: hm-fade-in $duration-entrance $ease-out both;
+}
+
+.hm-animate-fade-in-up {
+  animation: hm-fade-in-up $duration-entrance $ease-spring both;
+}
+
+.hm-animate-fade-in-down {
+  animation: hm-fade-in-down $duration-entrance $ease-spring both;
+}
+
+.hm-animate-scale-in {
+  animation: hm-scale-in $duration-normal $ease-spring both;
+}
+
+.hm-animate-slide-in-right {
+  animation: hm-slide-in-right $duration-normal $ease-out both;
+}
+
+.hm-animate-spin {
+  animation: hm-spin 800ms linear infinite;
+}
+
+// Stagger support — apply to children
+.hm-stagger > * {
+  animation: hm-fade-in-up $duration-entrance $ease-spring both;
+
+  @for $i from 1 through 12 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 40}ms;
+    }
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .hm-animate-fade-in,
+  .hm-animate-fade-in-up,
+  .hm-animate-fade-in-down,
+  .hm-animate-scale-in,
+  .hm-animate-slide-in-right,
+  .hm-stagger > * {
+    animation: none !important;
+  }
+}
