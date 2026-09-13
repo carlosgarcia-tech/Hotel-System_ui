@@ -53,12 +53,8 @@ export class CreateReservationComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('CreateReservationComponent initialized');
     this.hotelId = this.route.snapshot.paramMap.get('hotelId') || '';
     this.roomId = this.route.snapshot.paramMap.get('roomId') || '';
-
-    console.log('Hotel ID:', this.hotelId);
-    console.log('Room ID:', this.roomId);
 
     if (!this.hotelId || !this.roomId) {
       this.error = 'ID de hotel o habitación no válido';
@@ -79,7 +75,7 @@ export class CreateReservationComponent implements OnInit {
         this.isLoading = false;
         this.cdr.detectChanges();
       })
-      .catch((error) => {
+      .catch(() => {
         this.error = 'Error al cargar los datos';
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -90,7 +86,6 @@ export class CreateReservationComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.roomsService.getRoomById(this.hotelId, this.roomId).subscribe({
         next: (response: SingleRoomApiResponse) => {
-          console.log('Room response:', response);
           if (response.success && response.data) {
             this.room = response.data;
             this.reservationForm
@@ -107,8 +102,7 @@ export class CreateReservationComponent implements OnInit {
             reject();
           }
         },
-        error: (err) => {
-          console.error('Error loading room:', err);
+        error: () => {
           this.error = 'Error al cargar los detalles de la habitación';
           reject();
         },
@@ -120,7 +114,6 @@ export class CreateReservationComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.hotelsService.getHotelById(this.hotelId).subscribe({
         next: (response) => {
-          console.log('Hotel response:', response);
           if (response.success && response.data) {
             if (Array.isArray(response.data)) {
               if (response.data.length > 0) {
@@ -139,16 +132,15 @@ export class CreateReservationComponent implements OnInit {
             reject(new Error('Hotel not found'));
           }
         },
-        error: (err) => {
-          console.error('Error loading hotel:', err);
+        error: () => {
           this.error = 'Error al cargar los detalles del hotel';
-          reject(err);
+          reject(new Error('Hotel load failed'));
         },
       });
     });
   }
+
   onSubmit() {
-    console.log('Form submitted');
     if (this.reservationForm.valid && this.room && this.hotel) {
       this.isLoading = true;
       this.error = null;
@@ -163,12 +155,9 @@ export class CreateReservationComponent implements OnInit {
         specialRequests: this.reservationForm.value.specialRequests,
       };
 
-      console.log('Creating reservation with data:', formData);
-
       this.reservationService.createReservation(this.hotelId, this.roomId, formData).subscribe({
         next: (response) => {
           this.isLoading = false;
-          console.log('Reservation response:', response);
           if (response.success) {
             this.successMessage = 'Reserva creada exitosamente!';
             setTimeout(() => {
@@ -181,13 +170,11 @@ export class CreateReservationComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
-          console.error('Reservation error:', err);
           this.error = err.error?.message || 'Error al crear la reserva';
           this.cdr.detectChanges();
         },
       });
     } else {
-      console.log('Form invalid, marking as touched');
       this.markFormGroupTouched();
     }
   }

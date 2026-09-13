@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CardComponent } from '../../../../shared/components/card/card.component';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-home',
@@ -11,6 +12,7 @@ import { CardComponent } from '../../../../shared/components/card/card.component
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
+  private notificationService = inject(NotificationService);
   protected readonly title = "HotelManager";
   
   sampleHotels = [
@@ -107,20 +109,17 @@ export class HomeComponent {
   }
 
   onCardClick(hotelId: number) {
-    console.log('Card clicked:', hotelId);
+    // Handle card click
   }
 
   onActionClick(action: string, hotelId: number) {
-    console.log('Action clicked:', action, 'for hotel:', hotelId);
     switch(action) {
       case 'view-details':
-        alert(`Ver detalles del hotel ${hotelId}`);
+        this.notificationService.info(`Ver detalles del hotel ${hotelId}`);
         break;
       case 'book-now':
-        alert(`Reservar hotel ${hotelId}`);
+        this.notificationService.info(`Reservar hotel ${hotelId}`);
         break;
-      default:
-        console.log('Acción no reconocida:', action);
     }
   }
 }

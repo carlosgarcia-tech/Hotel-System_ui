@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReservationService } from '../../services/reservation.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 export interface Reservation {
   id: string;
@@ -39,6 +40,7 @@ export interface ReservationsApiResponse {
 })
 export class MyReservationsComponent implements OnInit {
   private reservationService = inject(ReservationService);
+  private notificationService = inject(NotificationService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
@@ -74,7 +76,6 @@ export class MyReservationsComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error loading reservations:', err);
         this.error = err.error?.message || 'Error al cargar las reservas';
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -215,11 +216,11 @@ export class MyReservationsComponent implements OnInit {
   }
 
   viewReservationDetails(reservationId: string) {
-    alert(`Ver detalles de la reserva: ${reservationId}`);
+    this.notificationService.info(`Detalles de la reserva: ${reservationId}`);
   }
 
   modifyReservation(reservationId: string) {
-    alert(`Modificar reserva: ${reservationId}`);
+    this.notificationService.info(`Modificar reserva: ${reservationId}`);
   }
 
   confirmCancelReservation(reservation: Reservation) {
@@ -249,14 +250,13 @@ export class MyReservationsComponent implements OnInit {
           this.applyFilter();
           this.closeCancelModal();
         } else {
-          alert('Error al cancelar la reserva: ' + (response.message || 'Error desconocido'));
+          this.notificationService.error('Error al cancelar la reserva: ' + (response.message || 'Error desconocido'));
         }
         this.cancellingReservations.delete(reservationId);
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error cancelling reservation:', err);
-        alert('Error al cancelar la reserva: ' + (err.error?.message || 'Error de conexión'));
+        this.notificationService.error('Error al cancelar la reserva: ' + (err.error?.message || 'Error de conexión'));
         this.cancellingReservations.delete(reservationId);
         this.cdr.detectChanges();
       },

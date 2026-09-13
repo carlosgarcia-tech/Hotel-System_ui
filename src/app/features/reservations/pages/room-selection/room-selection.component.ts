@@ -5,6 +5,7 @@ import { RoomsService } from '../../../hotels/services/rooms.service';
 import { Room } from '../../../../domain/models/room.model';
 import { CardComponent, CardAction } from '../../../../shared/components/card/card.component';
 import { AuthService } from '../../../auth/services/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-room-selection',
@@ -18,6 +19,7 @@ export class RoomSelectionComponent implements OnInit {
   private router = inject(Router);
   private roomsService = inject(RoomsService);
   public authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
 
@@ -30,7 +32,6 @@ export class RoomSelectionComponent implements OnInit {
     this.hotelId = this.route.snapshot.paramMap.get('hotelId') || '';
 
     if (!this.hotelId) {
-      console.error('No hotel ID found in route parameters');
       this.error = 'ID de hotel no válido';
       this.isLoading = false;
       this.cdr.detectChanges();
@@ -51,7 +52,6 @@ export class RoomSelectionComponent implements OnInit {
 
     this.roomsService.getRoomsByHotelId(this.hotelId).subscribe({
       next: (response) => {
-
         if (response.success) {
           this.rooms = response.data || [];
         } else {
@@ -61,16 +61,8 @@ export class RoomSelectionComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('HTTP Error occurred:', err);
-        console.error('Error details:', err.error);
-        console.error('Error status:', err.status);
-        console.error('Error message:', err.message);
-
         this.error = err.error?.message || 'Error al cargar las habitaciones';
         this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      complete: () => {
         this.cdr.detectChanges();
       },
     });
@@ -147,7 +139,6 @@ export class RoomSelectionComponent implements OnInit {
 
   getBedSummary(bedConfig: any): string {
     if (!bedConfig?.beds) {
-      console.warn('No bed configuration found for room');
       return 'Sin información';
     }
 
@@ -170,16 +161,15 @@ export class RoomSelectionComponent implements OnInit {
   viewRoomDetails(roomId: string) {
     const room = this.rooms.find((r) => r.id === roomId);
     if (room) {
-      alert(`Detalles de la habitación:
-Número: ${room.number}
-Tipo: ${this.getRoomTypeDisplay(room.type)}
-Piso: ${room.floor}
-Precio: $${room.pricing.basePrice} ${room.pricing.currency}
-Capacidad: ${room.capacity.total} personas (${room.capacity.adults} adultos, ${
-        room.capacity.children
-      } niños)
-Tamaño: ${room.size.area} ${room.size.unit}
-Disponible: ${room.availability.isAvailable ? 'Sí' : 'No'}`);
+      const details = [
+        `Habitación: ${room.number}`,
+        `Tipo: ${this.getRoomTypeDisplay(room.type)}`,
+        `Piso: ${room.floor}`,
+        `Precio: $${room.pricing.basePrice} ${room.pricing.currency}`,
+        `Capacidad: ${room.capacity.total} personas`,
+        `Disponible: ${room.availability.isAvailable ? 'Sí' : 'No'}`
+      ].join(' | ');
+      this.notificationService.info(details, 8000);
     }
   }
 
