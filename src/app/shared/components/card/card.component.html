@@ -14,36 +14,28 @@
     </div>
   </div>
 
-  <div class="card-header" *ngIf="showHeader && (badges.length > 0 || rating !== null)">
-    <div class="card-badges" *ngIf="badges.length > 0">
-      <span *ngFor="let badge of badges" [class]="getBadgeClass(badge.variant)">
-        {{ badge.text }}
-      </span>
-    </div>
-    
-    <div class="card-rating" *ngIf="rating !== null">
-      <div class="stars">
-        <i *ngFor="let star of getRatingStars()" 
-           class="star"
-           [class.fas]="star.filled"
-           [class.fa-star]="star.filled"
-           [class.fa-star-half-alt]="star.half"
-           [class.far]="!star.filled && !star.half"
-           [class.fa-star]="!star.filled && !star.half">
-        </i>
-      </div>
-      <span class="rating-value">{{ rating }}</span>
-    </div>
-  </div>
-
   <div class="card-image" *ngIf="showImage && imageUrl">
-    <img [src]="imageUrl" [alt]="imageAlt" />
-    <div class="image-overlay">
-      <div class="price-tag" *ngIf="price !== null">
-        <span class="currency">{{ currency }}</span>
-        <span class="amount">{{ price | number:'1.2-2' }}</span>
-        <span class="period" *ngIf="variant === 'hotel' || variant === 'room'">/noche</span>
+    <img [src]="imageUrl" [alt]="imageAlt" loading="lazy" />
+
+    <div class="card-overlay-top">
+      <div class="card-badges" *ngIf="badges.length > 0">
+        <span *ngFor="let badge of badges; let i = index"
+              class="badge"
+              [class.badge-accent]="i === getAccentBadgeIndex()">
+          {{ badge.text }}
+        </span>
       </div>
+
+      <div class="card-rating" *ngIf="rating !== null">
+        <i class="fas fa-star rating-star"></i>
+        <span class="rating-value">{{ rating }}</span>
+      </div>
+    </div>
+
+    <div class="price-tag" *ngIf="price !== null">
+      <span class="currency">{{ currency }}</span>
+      <span class="amount">{{ price | number:'1.2-2' }}</span>
+      <span class="period" *ngIf="variant === 'hotel' || variant === 'room'">/noche</span>
     </div>
   </div>
 
@@ -55,32 +47,26 @@
     </div>
 
     <div class="card-details" [ngSwitch]="variant">
-      
       <div *ngSwitchCase="'hotel'" class="hotel-details">
         <ng-content select="[slot=hotel-amenities]"></ng-content>
         <ng-content select="[slot=hotel-location]"></ng-content>
       </div>
-
       <div *ngSwitchCase="'room'" class="room-details">
         <ng-content select="[slot=room-features]"></ng-content>
         <ng-content select="[slot=room-capacity]"></ng-content>
       </div>
-
       <div *ngSwitchCase="'reservation'" class="reservation-details">
         <ng-content select="[slot=reservation-dates]"></ng-content>
         <ng-content select="[slot=reservation-status]"></ng-content>
       </div>
-
       <div *ngSwitchCase="'promotion'" class="promotion-details">
         <ng-content select="[slot=promotion-validity]"></ng-content>
         <ng-content select="[slot=promotion-discount]"></ng-content>
       </div>
-
       <div *ngSwitchCase="'user'" class="user-details">
         <ng-content select="[slot=user-role]"></ng-content>
         <ng-content select="[slot=user-status]"></ng-content>
       </div>
-
       <div *ngSwitchDefault>
         <ng-content></ng-content>
       </div>

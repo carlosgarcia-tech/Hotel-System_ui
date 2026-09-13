@@ -91,4 +91,10 @@ export class CardComponent {
   getActionClass(variant: string = 'primary'): string {
     return `btn btn-${variant}`;
   }
+
+  getAccentBadgeIndex(): number {
+    const accentVariants = ['primary', 'warning'];
+    const idx = this.badges.findIndex(b => accentVariants.includes(b.variant));
+    return idx >= 0 ? idx : -1;
+  }
 }

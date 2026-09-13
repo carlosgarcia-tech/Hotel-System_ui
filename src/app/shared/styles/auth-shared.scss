@@ -1,12 +1,12 @@
 .terms-link,
 .login-link {
-  color: #667eea;
+  color: var(--accent);
   text-decoration: none;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: color var(--duration-micro) var(--ease-out);
 
   &:hover {
-    color: #764ba2;
+    color: var(--accent-hover);
     text-decoration: underline;
   }
 }
@@ -14,9 +14,9 @@
 .checkbox-label {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  font-size: 0.95rem;
-  color: #374151;
+  gap: var(--space-3);
+  font-size: var(--text-body);
+  color: var(--text-secondary);
   cursor: pointer;
   user-select: none;
   line-height: 1.5;
@@ -24,23 +24,38 @@
 
 .checkbox-label .checkbox {
   appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #d1d5db;
-  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-base);
   position: relative;
   cursor: pointer;
-  transition: all 0.3s ease;
   flex-shrink: 0;
-  margin-top: 0.1rem;
+  margin-top: 2px;
+  transition:
+    background var(--duration-micro) var(--ease-out),
+    border-color var(--duration-micro) var(--ease-out);
 }
 
 .checkbox-label .checkbox:checked {
-  background: #667eea;
-  border-color: #667eea;
+  background: var(--accent);
+  border-color: var(--accent);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 6px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--accent-text-on);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
 }
 
 .checkbox-label .checkbox:focus {
-  outline: 2px solid transparent;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
 }

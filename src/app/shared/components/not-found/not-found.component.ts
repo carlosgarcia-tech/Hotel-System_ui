@@ -26,7 +26,7 @@ import { RouterModule } from '@angular/router';
       align-items: center;
       min-height: 60vh;
       text-align: center;
-      padding: 2rem;
+      padding: var(--space-8);
     }
 
     .not-found-content {
@@ -34,41 +34,45 @@ import { RouterModule } from '@angular/router';
     }
 
     h1 {
-      font-size: 6rem;
-      color: #667eea;
+      font-size: 5rem;
+      color: var(--accent);
       margin: 0;
-      font-weight: bold;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
     }
 
     h2 {
-      font-size: 2rem;
-      color: #333;
-      margin: 1rem 0;
+      font-size: var(--text-h2);
+      color: var(--text-primary);
+      margin: var(--space-4) 0;
+      font-weight: 600;
     }
 
     p {
-      color: #666;
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
+      color: var(--text-secondary);
+      font-size: var(--text-body);
+      margin-bottom: var(--space-6);
     }
 
     .btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      background: var(--accent);
+      color: var(--accent-text-on);
       border: none;
-      padding: 0.8rem 1.5rem;
-      border-radius: 8px;
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-md);
       font-weight: 600;
+      font-size: var(--text-body);
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: var(--space-2);
       cursor: pointer;
-      transition: transform 0.3s ease;
+      transition: background var(--duration-micro) var(--ease-out);
     }
 
     .btn:hover {
-      transform: translateY(-2px);
+      background: var(--accent-hover);
     }
   `]
 })

@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, OnDestroy, Output, EventEmitter, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, Router, NavigationEnd, NavigationStart } from '@angular/router';
-import { AuthService, UserRole } from '../../../features/auth/services/auth.service';
+import { AuthService } from '../../../features/auth/services/auth.service';
+import { UserRole } from '../../../domain/models/user.model';
 import { filter, Subscription } from 'rxjs';
 
 @Component({

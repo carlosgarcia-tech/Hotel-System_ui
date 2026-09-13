@@ -37,104 +37,115 @@ import { RouterModule } from '@angular/router';
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 2rem;
+      background: var(--surface-base);
+      padding: var(--space-8);
     }
 
     .error-content {
       text-align: center;
-      color: white;
       max-width: 500px;
     }
 
     .error-icon {
-      font-size: 4rem;
-      margin-bottom: 2rem;
-      opacity: 0.8;
+      font-size: 3rem;
+      margin-bottom: var(--space-6);
+      color: var(--accent);
+      background: var(--accent-subtle);
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .error-title {
-      font-size: 6rem;
-      font-weight: 900;
+      font-size: 4rem;
+      font-weight: 700;
       margin: 0;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      color: var(--text-primary);
+      letter-spacing: -0.04em;
+      line-height: 1;
     }
 
     .error-subtitle {
-      font-size: 2rem;
-      margin: 1rem 0;
-      font-weight: 700;
+      font-size: var(--text-h2);
+      margin: var(--space-4) 0;
+      font-weight: 600;
+      color: var(--text-primary);
     }
 
     .error-description {
-      font-size: 1.1rem;
-      margin: 2rem 0;
-      opacity: 0.9;
+      font-size: var(--text-body);
+      margin: var(--space-6) 0;
+      color: var(--text-secondary);
       line-height: 1.6;
     }
 
     .error-actions {
       display: flex;
-      gap: 1rem;
+      gap: var(--space-3);
       justify-content: center;
       flex-wrap: wrap;
-      margin-top: 3rem;
+      margin-top: var(--space-8);
     }
 
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 12px;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-md);
       font-weight: 600;
+      font-size: var(--text-body);
       text-decoration: none;
-      transition: all 0.3s ease;
+      transition:
+        background var(--duration-micro) var(--ease-out),
+        border-color var(--duration-micro) var(--ease-out);
       cursor: pointer;
-      border: none;
-      font-size: 1rem;
     }
 
     .btn-primary {
-      background: rgba(255,255,255,0.2);
-      color: white;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.3);
+      background: var(--accent);
+      color: var(--accent-text-on);
+      border: 1px solid var(--accent);
     }
 
     .btn-primary:hover {
-      background: rgba(255,255,255,0.3);
-      transform: translateY(-2px);
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
     }
 
     .btn-outline {
       background: transparent;
-      color: white;
-      border: 2px solid rgba(255,255,255,0.5);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
     }
 
     .btn-outline:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: white;
+      background: var(--surface-2);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 640px) {
       .error-title {
-        font-size: 4rem;
+        font-size: 3rem;
       }
-      
+
       .error-subtitle {
-        font-size: 1.5rem;
+        font-size: var(--text-h3);
       }
-      
+
       .error-actions {
         flex-direction: column;
         align-items: center;
       }
-      
+
       .btn {
         width: 100%;
         max-width: 250px;
+        justify-content: center;
       }
     }
   `]
