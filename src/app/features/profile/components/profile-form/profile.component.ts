@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AuthService, User } from '../../../auth/services/auth.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { User } from '../../../../domain/models/user.model';
 
 @Component({
   selector: 'app-profile',

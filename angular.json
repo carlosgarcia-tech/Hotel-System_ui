@@ -28,7 +28,8 @@
             ],
             "styles": [
               "src/styles.scss",
-              "src/app/shared/styles/auth-shared.scss"
+              "src/app/shared/styles/auth-shared.scss",
+              "src/app/shared/styles/animations.scss"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",
@@ -38,6 +39,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
