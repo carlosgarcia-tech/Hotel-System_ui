@@ -3,25 +3,8 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
-
-export enum UserRole {
-  ADMIN = 'admin',
-  MANAGER = 'manager',
-  USER = 'user',
-}
-
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: UserRole;
-  phone?: string;
-  address?: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { environment } from '../../../../environments/environment';
+import { UserRole, User } from '../../../domain/models/user.model';
 
 export interface LoginResponse {
   success: boolean;
@@ -45,10 +28,10 @@ export interface ProfileResponse {
 export class AuthService {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
-  private readonly API_BASE_URL = 'http://localhost:3000/api';
-  private readonly TOKEN_KEY = 'hotel_manager_token';
-  private readonly USER_KEY = 'hotel_manager_user';
-  private readonly REFRESH_TOKEN_KEY = 'hotel_manager_refresh_token';
+  private readonly API_BASE_URL = environment.apiUrl;
+  private readonly TOKEN_KEY = environment.tokenKey;
+  private readonly USER_KEY = environment.userKey;
+  private readonly REFRESH_TOKEN_KEY = environment.refreshTokenKey;
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -163,9 +146,7 @@ export class AuthService {
     const token = this.getTokenFromStorage();
     if (!token) return throwError(() => new Error('No authentication token found'));
 
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-
-    return this.http.get<ProfileResponse>(`${this.API_BASE_URL}/auth/profile`, { headers }).pipe(
+    return this.http.get<ProfileResponse>(`${this.API_BASE_URL}/auth/profile`).pipe(
       tap((response) => {
         if (response.success && response.data) {
           this.setStorageItem(this.USER_KEY, JSON.stringify(response.data));
@@ -181,13 +162,8 @@ export class AuthService {
     const token = this.getTokenFromStorage();
     if (!token) return throwError(() => new Error('No authentication token found'));
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
-
     return this.http
-      .put<ProfileResponse>(`${this.API_BASE_URL}/users/${userId}`, userData, { headers })
+      .put<ProfileResponse>(`${this.API_BASE_URL}/users/${userId}`, userData)
       .pipe(
         tap((response) => {
           if (response.success && response.data && this.getCurrentUser()?.id === response.data.id) {
@@ -203,10 +179,7 @@ export class AuthService {
   private handleError = (error: HttpErrorResponse) => {
     let errorMessage = 'An unexpected error occurred';
 
-    if (error.status === 401) {
-      errorMessage = 'Session expired. Please login again.';
-      this.logout();
-    } else if (error.error?.message) {
+    if (error.error?.message) {
       errorMessage = error.error.message;
     } else if (error.message) {
       errorMessage = error.message;

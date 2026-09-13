@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export interface CreateReservationData {
   checkInDate: string;
@@ -17,7 +18,7 @@ export interface CreateReservationData {
 })
 export class ReservationService {
   private http = inject(HttpClient);
-  private readonly API_BASE_URL = 'http://localhost:3000/api';
+  private readonly API_BASE_URL = environment.apiUrl;
 
   createReservation(hotelId: string, roomId: string, data: CreateReservationData): Observable<any> {
     return this.http.post(

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Room } from '../../../domain/models/room.model';
+import { environment } from '../../../../environments/environment';
 
 export interface RoomApiResponse {
   success: boolean;
@@ -22,7 +23,7 @@ export interface SingleRoomApiResponse {
 })
 export class RoomsService {
   private http = inject(HttpClient);
-  private readonly API_BASE_URL = 'http://localhost:3000/api';
+  private readonly API_BASE_URL = environment.apiUrl;
 
   getRoomsByHotelId(hotelId: string): Observable<RoomApiResponse> {
     return this.http.get<RoomApiResponse>(`${this.API_BASE_URL}/rooms/hotel/${hotelId}`);
