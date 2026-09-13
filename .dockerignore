@@ -1,0 +1,14 @@
+node_modules
+dist
+.angular
+.git
+.github
+.agents
+.openhands
+.zcode
+.interface-design
+skills
+skills-lock.json
+*.md
+.gitignore
+.editorconfig
