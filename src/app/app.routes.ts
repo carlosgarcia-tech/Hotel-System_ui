@@ -1,18 +1,19 @@
 import { Routes } from '@angular/router';
 import { authGuard, roleGuard } from '../app/core/guards/auth.guard';
-import { HomeComponent } from './features/home/pages/home/home.component';
-import { HotelsDashboardComponent } from './features/hotels/pages/hotels-dashboard/hotels-dashboard.component';
-import { ProfileComponent } from './features/profile/components/profile-form/profile.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
+    loadComponent: () =>
+      import('./features/home/pages/home/home.component').then((m) => m.HomeComponent),
     pathMatch: 'full',
   },
   {
     path: 'hotels',
-    component: HotelsDashboardComponent,
+    loadComponent: () =>
+      import('./features/hotels/pages/hotels-dashboard/hotels-dashboard.component').then(
+        (m) => m.HotelsDashboardComponent
+      ),
   },
   {
     path: 'rooms/:hotelId',
