@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
 import { environment } from '../../../../environments/environment';
+import { UserRole } from '../../../domain/models/user.model';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -10,7 +12,7 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AuthService, provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideZonelessChangeDetection(), AuthService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -88,18 +90,22 @@ describe('AuthService', () => {
       email: 'admin@test.com',
       firstName: 'Admin',
       lastName: 'User',
-      role: 'ADMIN' as const,
+      role: UserRole.ADMIN,
       isActive: true,
       createdAt: '2024-01-01',
       updatedAt: '2024-01-01',
     };
 
     localStorage.setItem(environment.userKey, JSON.stringify(mockUser));
+    localStorage.setItem(environment.tokenKey, 'test-token');
 
-    // Re-initialize the service to pick up the stored user
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), AuthService, provideHttpClient(), provideHttpClientTesting()],
+    });
     const freshService = TestBed.inject(AuthService);
 
-    expect(freshService.hasRole('ADMIN')).toBeTrue();
-    expect(freshService.hasRole('USER')).toBeFalse();
+    expect(freshService.hasRole(UserRole.ADMIN)).toBeTrue();
+    expect(freshService.hasRole(UserRole.USER)).toBeFalse();
   });
 });

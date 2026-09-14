@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { NotificationService } from './notification.service';
 
 describe('NotificationService', () => {
@@ -6,7 +7,7 @@ describe('NotificationService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [NotificationService],
+      providers: [provideZonelessChangeDetection(), NotificationService],
     });
     service = TestBed.inject(NotificationService);
   });
